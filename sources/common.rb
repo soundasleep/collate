@@ -1,51 +1,97 @@
+require "get_pomo"
 require "json"
 
-def passthru(command)
-  system(command, out: STDOUT, err: STDERR)
-end
-
-def identify_language(filename)
-  bits = filename.split("/")
-  bits.last.gsub! /\.([a-z]{2,3})$/, ""
-
-  return bits.last if bits.last.match(/^[a-z]{2}$/) || bits.last.match(/^[a-z]{2}_[A-Z]{2}$/)
-
-  case bits.last
-    when "english"
-      "en"
-    when "french"
-      "fr"
-    when "russian"
-      "ru"
-    when "german"
-      "de"
-    when "japanese"
-      "jp"
-    when "chinese"
-      "zh"
-    when "traditional_chinese"
-      "zh_TW"
-    when "simplified_chinese"
-      "zh_CN"
-    else
-      puts "Could not identify language #{filename}"
-      false
+class BaseLoader
+  def workspace
+    root_path + "/workspace"
   end
-end
 
-def load_po_file(filename)
-  hash = GetPomo::PoFile.parse(File.read(filename)).map do |translation|
-    if translation.plural?
-      [ [translation.msgid[0], translation.msgstr[0]],
-        [translation.msgid[1], translation.msgstr[1]] ]
-    else
-      [[ translation.msgid, translation.msgstr ]]
+  def output
+    root_path + "/output"
+  end
+
+  def write_json(json, lang)
+    puts "Loaded #{json.keys.count} keys for #{lang}"
+
+    if json.any?
+      Dir.mkdir(output) unless Dir.exists?(output)
+
+      outfile = "#{output}/#{lang}.json"
+      File.open(outfile, "w") do |f|
+        puts "Wrote file #{outfile}"
+        f.write JSON.pretty_generate(json.sort.to_h)    # sorts keys
+      end
     end
-  end.flatten(1).reject do |k, v|
-    !k || !v || k.empty? || v.empty?
   end
 
-  hash << ["_comment", "loaded from #{filename} by load_po_file"]
+  def passthru(command)
+    system(command, out: STDOUT, err: STDERR)
+  end
 
-  Hash[hash]
+  def identify_language(filename)
+    bits = filename.split("/")
+    # remove file extension
+    bits.last.gsub!(/\.([a-z]{2,3})$/, "")
+
+    return bits.last if bits.last.match(/^[a-z]{2}$/) || bits.last.match(/^[a-z]{2}_[A-Z]{2}$/)
+
+    case bits.last
+      when "english"
+        "en"
+      when "french"
+        "fr"
+      when "russian"
+        "ru"
+      when "german"
+        "de"
+      when "japanese"
+        "jp"
+      when "chinese"
+        "zh"
+      when "traditional_chinese"
+        "zh_TW"
+      when "simplified_chinese"
+        "zh_CN"
+      else
+        puts "Could not identify language #{filename}"
+        false
+    end
+  end
+
+  def load_po_file(filename)
+    hash = GetPomo::PoFile.parse(File.read(filename)).map do |translation|
+      if translation.plural?
+        [ [translation.msgid[0], translation.msgstr[0]],
+          [translation.msgid[1], translation.msgstr[1]] ]
+      else
+        [[ translation.msgid, translation.msgstr ]]
+      end
+    end.flatten(1).reject do |k, v|
+      !k || !v || k.empty? || v.empty?
+    end
+
+    hash << ["_comment", "loaded from #{filename} by load_po_file"]
+
+    Hash[hash]
+  end
+
 end
+
+module SubversionLoader
+  def load_subversion
+    puts "Checking out latest subversion into #{workspace}..."
+    passthru "svn checkout #{subversion} #{workspace}"
+  end
+end
+
+module GitLoader
+  def load_git
+    puts "Checking out latest Git into #{workspace}..."
+    if File.exist?(workspace)
+      passthru "cd #{workspace} && git pull && git checkout master"
+    else
+      passthru "git clone #{git} #{workspace}"
+    end
+  end
+end
+
