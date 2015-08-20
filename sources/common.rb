@@ -39,8 +39,13 @@ class BaseLoader
 
     if !lang
       # try splitting up the first _
-      bits = bits.last.split("_", 2)
-      lang = identify_language_string(bits.last)
+      more_bits = bits.last.split("_", 2)
+      lang = identify_language_string(more_bits.last)
+    end
+
+    if !lang
+      # try the parent folder name
+      lang = identify_language_string(bits[-2])
     end
 
     if !lang
@@ -103,6 +108,8 @@ class BaseLoader
       [k, v]
     end.reject do |k, v|
       k.match("%") || v.match("%")
+    end.reject do |k, v|
+      k.match(/<.+>/) || v.match(/<.+>/)    # strip anything with HTML
     end.map do |k, v|
       [k.strip, v.strip]
     end
@@ -221,6 +228,8 @@ module XmlLoader
       [k, v]
     end.reject do |k, v|
       k.match("%") || v.match("%")
+    end.reject do |k, v|
+      k.match(/<.+>/) || v.match(/<.+>/)    # strip anything with HTML
     end.map do |k, v|
       [k.strip, v.strip]
     end
