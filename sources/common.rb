@@ -33,6 +33,9 @@ class BaseLoader
     # remove file extension
     bits.last.gsub!(/\.([a-z]{2,3})$/, "")
 
+    # fix invalid ISO code used by .po
+    return "jp" if bits.last == "ja"
+
     return bits.last if bits.last.match(/^[a-z]{2}$/) || bits.last.match(/^[a-z]{2}_[A-Z]{2}$/)
 
     case bits.last
@@ -59,7 +62,10 @@ class BaseLoader
   end
 
   def load_po_file(filename)
-    hash = GetPomo::PoFile.parse(File.read(filename)).map do |translation|
+    loaded_file = File.read(filename)
+    loaded_file.scrub!    # ignore invalid UTF-8 characters as necessary
+
+    hash = GetPomo::PoFile.parse(loaded_file).map do |translation|
       if translation.plural?
         [ [translation.msgid[0], translation.msgstr[0]],
           [translation.msgid[1], translation.msgstr[1]] ]
