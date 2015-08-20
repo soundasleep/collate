@@ -1,6 +1,6 @@
 require_relative "../common"
 
-class GnomePowerManager < BaseLoader
+class GnomePowerManagerLoader < BaseLoader
   include GitLoader
 
   def root_path
@@ -11,29 +11,14 @@ class GnomePowerManager < BaseLoader
     "git@github.com:GNOME/gnome-power-manager.git"
   end
 
+  def po_files
+    Dir["#{workspace}/po/*.po"]
+  end
+
   def load
     load_git
-
-    english = {}
-
-    # load all .po
-    Dir["#{workspace}/po/*.po"].map do |file|
-      lang = identify_language(file)
-      if lang
-        puts "#{file} --> #{lang}"
-
-        json = load_po_file(file)
-        write_json json, lang
-
-        # merge into english
-        json.each do |k, v|
-          english[k] = k
-        end
-      end
-    end
-
-    write_json english, "en"
+    load_po_files
   end
 end
 
-GnomePowerManager.new.load
+GnomePowerManagerLoader.new.load

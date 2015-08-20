@@ -67,7 +67,21 @@ class BaseLoader
         [[ translation.msgid, translation.msgstr ]]
       end
     end.flatten(1).reject do |k, v|
-      !k || !v || k.empty? || v.empty?
+      !k || !v
+    end.map do |k, v|
+      [k.strip, v.strip]
+    end.reject do |k, v|
+      k.empty? || v.empty?
+    end.map do |k, v|
+      k.gsub!(/\%s(\W)/, ":string\\1")
+      v.gsub!(/\%s(\W)/, ":string\\1")
+      k.gsub!(/\%d(\W)/, ":number\\1")
+      v.gsub!(/\%d(\W)/, ":number\\1")
+      [k, v]
+    end.reject do |k, v|
+      k.match("%") || v.match("%")
+    end.map do |k, v|
+      [k.strip, v.strip]
     end
 
     hash << ["_comment", "loaded from #{filename} by load_po_file"]
@@ -75,6 +89,25 @@ class BaseLoader
     Hash[hash]
   end
 
+  def load_po_files
+    english = {}
+    po_files.map do |file|
+      lang = identify_language(file)
+      if lang
+        puts "#{file} --> #{lang}"
+
+        json = load_po_file(file)
+        write_json json, lang
+
+        # merge into english
+        json.each do |k, v|
+          english[k] = k
+        end
+      end
+    end
+
+    write_json english, "en"
+  end
 end
 
 module SubversionLoader
