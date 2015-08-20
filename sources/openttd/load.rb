@@ -1,6 +1,9 @@
 require_relative "../common"
 
-def load_file(filename)
+workspace = File.dirname(__FILE__) + "/workspace"
+output = File.dirname(__FILE__) + "/output"
+
+def load_openttd_file(filename)
   pattern = /^([A-Z0-9_]+)\s+:(.+)/
 
   hash = File.open(filename).each_line.map(&:strip).select do |line|
@@ -32,19 +35,17 @@ def load_file(filename)
     !v.match(/\{/)
   end
 
+  hash << ["_comment", "loaded from #{filename} by load_openttd_file"]
+
   Hash[hash]
 end
 
-
-workspace = File.dirname(__FILE__) + "/workspace"
-output = File.dirname(__FILE__) + "/output"
-
-Dir.mkdir(output)
+Dir.mkdir(output) unless Dir.exists?(output)
 
 puts "Checking out latest subversion into #{workspace}..."
 passthru "svn checkout http://svn.openttd.org/trunk/src/lang/ #{workspace}"
 
-core = load_file("#{workspace}/english.txt")
+core = load_openttd_file("#{workspace}/english.txt")
 puts "Loaded #{core.keys.length} phrases in English"
 
 # load all .txt
@@ -53,7 +54,7 @@ Dir["#{workspace}/*.txt"].map do |file|
   if lang
     puts "#{file} --> #{lang}"
 
-    loaded = load_file(file)
+    loaded = load_openttd_file(file)
 
     json = {}
     loaded.each do |key, value|

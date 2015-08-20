@@ -6,7 +6,10 @@ end
 
 def identify_language(filename)
   bits = filename.split("/")
-  bits.last[".txt"] = ""
+  bits.last.gsub! /\.([a-z]{2,3})$/, ""
+
+  return bits.last if bits.last.match(/^[a-z]{2}$/) || bits.last.match(/^[a-z]{2}_[A-Z]{2}$/)
+
   case bits.last
     when "english"
       "en"
@@ -28,4 +31,21 @@ def identify_language(filename)
       puts "Could not identify language #{filename}"
       false
   end
+end
+
+def load_po_file(filename)
+  hash = GetPomo::PoFile.parse(File.read(filename)).map do |translation|
+    if translation.plural?
+      [ [translation.msgid[0], translation.msgstr[0]],
+        [translation.msgid[1], translation.msgstr[1]] ]
+    else
+      [[ translation.msgid, translation.msgstr ]]
+    end
+  end.flatten(1).reject do |k, v|
+    !k || !v || k.empty? || v.empty?
+  end
+
+  hash << ["_comment", "loaded from #{filename} by load_po_file"]
+
+  Hash[hash]
 end

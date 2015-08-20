@@ -1,0 +1,14 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    get_pomo (0.9.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler (>= 1.8.4)
+  get_pomo
+
+BUNDLED WITH
+   1.10.6
