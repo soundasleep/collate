@@ -36,20 +36,22 @@ TODO
 * `License` - e.g. `GPL-3.0`
 * `Language` - e.g. `fr`, `en_GB` using ISO codes
 
-We use Ruby on Rails so we get some nice things for free, e.g. ActiveRecord, migrations, a web interface to observe progress.
-
 ## Loading sources
 
 Sources are defined in [sources/](sources/).
 
-Start a rails server with `rails s` and visit http://localhost:3000.
-
 TODO have an API to load and generate sources automatically.
 
 ```
-php -f load.php openttd
+ruby load_all.rb
 ```
 
 ## Contributing
 
 TODO
+
+## Bugs
+
+> incompatible encoding regexp match (UTF-8 regexp with CP850 string)
+
+If you are running on Windows, add the `--external-encoding UTF-8` switch to your ruby swcript.
