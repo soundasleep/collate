@@ -12,7 +12,7 @@ class GnomeGtk < BaseLoader
   end
 
   def po_files
-    Dir["#{workspace}/po/*.po"]
+    Dir["#{workspace}/{po,po-properties}/*.po"]
   end
 
   def load

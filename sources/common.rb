@@ -114,18 +114,23 @@ class BaseLoader
 
   def load_po_files
     english = {}
+    languages = {}
+
     po_files.map do |file|
       lang = identify_language(file)
       if lang
         puts "#{file} --> #{lang}"
+        languages[lang] ||= {}
+        languages[lang].merge! load_po_file(file)
+      end
+    end
 
-        json = load_po_file(file)
-        write_json json, lang
+    languages.each do |lang, json|
+      write_json json, lang
 
-        # merge into english
-        json.each do |k, v|
-          english[k] = k
-        end
+      # merge into english
+      json.each do |k, v|
+        english[k] = k
       end
     end
 
@@ -135,14 +140,14 @@ end
 
 module SubversionLoader
   def load_subversion
-    puts "Checking out latest subversion into #{workspace}..."
+    puts "Checking out latest subversion #{subversion} into #{workspace}..."
     passthru "svn checkout #{subversion} #{workspace}"
   end
 end
 
 module GitLoader
   def load_git
-    puts "Checking out latest Git into #{workspace}..."
+    puts "Checking out latest Git #{git} into #{workspace}..."
     if File.exist?(workspace)
       passthru "cd #{workspace} && git pull && git checkout master"
     else
@@ -153,7 +158,7 @@ end
 
 module MercurialLoader
   def load_mercurial
-    puts "Checking out latest Mercurial into #{workspace}..."
+    puts "Checking out latest Mercurial #{mercurial} into #{workspace}..."
     if File.exist?(workspace)
       passthru "cd #{workspace} && hg pull && hg update"
     else
@@ -167,18 +172,23 @@ module XmlLoader
 
   def load_ts_files
     english = {}
+    languages = {}
+
     ts_files.map do |file|
       lang = identify_language(file)
       if lang
         puts "#{file} --> #{lang}"
+        languages[lang] ||= {}
+        languages[lang].merge! load_ts_file(file)
+      end
+    end
 
-        json = load_ts_file(file)
-        write_json json, lang
+    languages.each do |lang, json|
+      write_json json, lang
 
-        # merge into english
-        json.each do |k, v|
-          english[k] = k
-        end
+      # merge into english
+      json.each do |k, v|
+        english[k] = k
       end
     end
 
