@@ -51,7 +51,7 @@ ruby load_all.rb
 
 ## Contributing
 
-TODO
+Pull requests welcome. Any additional [sources/](sources/) need to be GPL compatible with a LICENSE defined.
 
 ## Bugs
 
