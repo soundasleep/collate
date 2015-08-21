@@ -50,12 +50,15 @@ class OpenttdLoader < BaseLoader
       end
     end.map do |k, v|
       # replace common arguments
-      v.gsub! "{STRING}", ":string"
-      v.gsub! "{STRING1}", ":string1"
-      v.gsub! "{STRING2}", ":string2"
-      v.gsub! "{NUM}", ":num"
-      v.gsub! "{NUMBER}", ":number"
-      v.gsub! "{VELOCITY}", ":velocity"
+      v.gsub! "{STRING}", "%{string}"
+      v.gsub! "{STRING1}", "%{string1}"
+      v.gsub! "{STRING2}", "%{string1}"
+      v.gsub! "{NUM}", "%{num}"
+      v.gsub! "{NUMBER}", "%{number}"
+      v.gsub! "{VELOCITY}", "%{velocity}"
+      v.gsub! "{TOWN}", "%{town}"
+      v.gsub! "{TRAIN}", "%{train}"
+      v.gsub! "{VEHICLE}", "%{vehicle}"
       [k, v]
     end.map do |k, v|
       # colours should not really be in here
@@ -66,9 +69,12 @@ class OpenttdLoader < BaseLoader
       v.gsub! "{LTBLUE}", ""
       v.gsub! "{YELLOW}", ""
       v.gsub! "{GOLD}", ""
+      v.gsub! "{ORANGE}", ""
+      v.gsub! "{SILVER}", ""
+      v.gsub! "{TINYFONT}", ""
       [k, v]
     end.select do |k, v|
-      !v.match(/\{/)
+      !v.match(/[^%]\{/) && !v.match(/^\{/)
     end
 
     hash << ["_comment", "loaded from #{filename} by load_openttd_file"]

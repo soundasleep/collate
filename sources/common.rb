@@ -100,14 +100,16 @@ class BaseLoader
       [k.strip, v.strip]
     end.reject do |k, v|
       k.empty? || v.empty?
+    end.reject do |k, v|
+      k.length > 300 || v.length > 300
     end.map do |k, v|
-      k.gsub!(/\%s(\W)/, ":string\\1")
-      v.gsub!(/\%s(\W)/, ":string\\1")
-      k.gsub!(/\%d(\W)/, ":number\\1")
-      v.gsub!(/\%d(\W)/, ":number\\1")
+      k.gsub!(/\%s(\W)/, "%{string}\\1")
+      v.gsub!(/\%s(\W)/, "%{string}\\1")
+      k.gsub!(/\%d(\W)/, "%{number}\\1")
+      v.gsub!(/\%d(\W)/, "%{number}\\1")
       [k, v]
     end.reject do |k, v|
-      k.match("%") || v.match("%")
+      k.match(/\%[^{]/) || v.match(/\%[^{]/)
     end.reject do |k, v|
       k.match(/<.+>/) || v.match(/<.+>/)    # strip anything with HTML
     end.map do |k, v|
@@ -216,18 +218,20 @@ module XmlLoader
       [k.strip, v.strip]
     end.reject do |k, v|
       k.empty? || v.empty?
+    end.reject do |k, v|
+      k.length > 300 || v.length > 300
     end.map do |k, v|
-      k.gsub!(/\%1/, ":argument")
-      v.gsub!(/\%1/, ":argument")
-      k.gsub!(/\%2/, ":argument2")
-      v.gsub!(/\%2/, ":argument2")
-      k.gsub!(/\%s(\W)/, ":string\\1")
-      v.gsub!(/\%s(\W)/, ":string\\1")
-      k.gsub!(/\%d(\W)/, ":number\\1")
-      v.gsub!(/\%d(\W)/, ":number\\1")
+      k.gsub!(/\%1/, "%{argument}")
+      v.gsub!(/\%1/, "%{argument}")
+      k.gsub!(/\%2/, "%{argument2}")
+      v.gsub!(/\%2/, "%{argument2}")
+      k.gsub!(/\%s(\W)/, "%{string}\\1")
+      v.gsub!(/\%s(\W)/, "%{string}\\1")
+      k.gsub!(/\%d(\W)/, "%{number}\\1")
+      v.gsub!(/\%d(\W)/, "%{number}\\1")
       [k, v]
     end.reject do |k, v|
-      k.match("%") || v.match("%")
+      k.match(/\%[^{]/) || v.match(/\%[^{]/)
     end.reject do |k, v|
       k.match(/<.+>/) || v.match(/<.+>/)    # strip anything with HTML
     end.map do |k, v|
