@@ -14,6 +14,9 @@ could decentralize translation and share the load throughout the open source uni
 We don't need to translate the same thing hundreds of times, allowing translators
 to focus on translating the phrases that actually need to be translated.
 
+We only look for sources that are GPL-3.0 compatible, meaning that all generated
+translations are licensed under GPL-3.0.
+
 ## Goals
 
 1. A repository of open source projects with appropriate licenses
