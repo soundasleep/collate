@@ -7,7 +7,7 @@ def escape(s)
   s.inspect[1..-2]
 end
 
-output = "output/ruby"
+output = "../collate_rails/config/locale"
 Dir.mkdir(output) unless Dir.exists?(output)
 
 # load all languages

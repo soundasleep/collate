@@ -26,6 +26,14 @@ translations are licensed under GPL-3.0.
 5. Generate your own language packs with configurable goals and license compatibility
 6. Define your own translations that can be imported into your language pack
 
+## TODO
+
+1. Can we only check out the head of a Git repo rather than the entire thing?
+1. Only return strings that are present in two or more sources
+1. Reduce max string length to 256
+1. Can we import dictionaries for single words as a good baseline?
+1. Can we automatically capitalize for fuzziness e.g. "home" <=> "Home"
+
 ## Features
 
 TODO
