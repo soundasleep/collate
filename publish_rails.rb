@@ -26,7 +26,8 @@ end.each do |lang|
   # TODO priorities, rankings etc
   collated = {}
 
-  Dir[File.dirname(__FILE__) + "/sources/*/output/#{lang}.json"].each do |f|
+  # also load for zh = zh_TW
+  Dir[File.dirname(__FILE__) + "/sources/*/output/#{lang}{,_*}.json"].each do |f|
     json = JSON.parse(File.read(f))
     collated.merge! json
   end

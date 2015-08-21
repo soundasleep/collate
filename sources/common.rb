@@ -116,6 +116,8 @@ class BaseLoader
     end.reject do |k, v|
       k.match(/\%[^{]/) || v.match(/\%[^{]/)
     end.reject do |k, v|
+      k.match("--") || v.match("--")
+    end.reject do |k, v|
       k.match(/<.+>/) || v.match(/<.+>/)    # strip anything with HTML
     end.map do |k, v|
       [k.strip, v.strip]
@@ -238,6 +240,8 @@ module XmlLoader
     end.reject do |k, v|
       k.match(/\%[^{]/) || v.match(/\%[^{]/)
     end.reject do |k, v|
+      k.match("--") || v.match("--")
+    end.reject do |k, v|
       k.match(/<.+>/) || v.match(/<.+>/)    # strip anything with HTML
     end.map do |k, v|
       [k.strip, v.strip]
@@ -321,6 +325,8 @@ module YamlLoader
       k.length > 300 || v.length > 300
     end.reject do |k, v|
       k.match(/\%[^{]/) || v.match(/\%[^{]/)
+    end.reject do |k, v|
+      k.match("--") || v.match("--")
     end.reject do |k, v|
       k.match(/<.+>/) || v.match(/<.+>/)    # strip anything with HTML
     end.map do |k, v|
