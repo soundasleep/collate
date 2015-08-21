@@ -3,6 +3,8 @@ require "json"
 require "yaml"
 require "rexml/document"
 
+# TODO split each of these classes into separate includes
+
 class BaseLoader
   def workspace
     root_path + "/workspace"
@@ -62,7 +64,7 @@ class BaseLoader
 
     return string if string.match(/^[a-z]{2}$/) || string.match(/^[a-z]{2}_[A-Z]{2}$/)
 
-    case string
+    case string.sub("_", " ").downcase
       when "english"
         "en"
       when "french"
@@ -75,9 +77,11 @@ class BaseLoader
         "jp"
       when "chinese"
         "zh"
-      when "traditional_chinese"
+      when "maori"
+        "mi"
+      when "traditional chinese", "chinese (traditional)"
         "zh_TW"
-      when "simplified_chinese"
+      when "simplified chinese", "chinese (simplified)"
         "zh_CN"
       else
         false

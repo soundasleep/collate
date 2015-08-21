@@ -17,7 +17,7 @@ class LoomioLoader < BaseLoader
   end
 
   def load
-    # load_git
+    load_git
     load_yaml_files
   end
 end
