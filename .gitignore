@@ -1,3 +1,4 @@
 sources/*/workspace
 sources/*/output
 sources/*/.svn
+output/
