@@ -167,7 +167,7 @@ module GitLoader
     if File.exist?(workspace)
       passthru "cd #{workspace} && git pull && git checkout master"
     else
-      passthru "git clone #{git} #{workspace}"
+      passthru "git clone --depth 1 #{git} #{workspace}"
     end
   end
 end
