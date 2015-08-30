@@ -1,6 +1,6 @@
 require_relative "../common"
 
-class AdblockPlusAndroidLoader < BaseLoader
+class K9MailLoader < BaseLoader
   include GitLoader
   include AndroidLoader
 
@@ -9,11 +9,11 @@ class AdblockPlusAndroidLoader < BaseLoader
   end
 
   def git
-    "https://github.com/adblockplus/adblockplusandroid"
+    "https://github.com/k9mail/k-9"
   end
 
   def values_files
-    Dir["#{workspace}/res/values*/strings.xml"]
+    Dir["#{workspace}/k9mail/src/main/res/values*/strings.xml"]
   end
 
   def load
@@ -22,4 +22,4 @@ class AdblockPlusAndroidLoader < BaseLoader
   end
 end
 
-AdblockPlusAndroidLoader.new.load
+K9MailLoader.new.load
