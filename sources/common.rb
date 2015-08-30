@@ -58,6 +58,11 @@ class BaseLoader
     end
 
     if !lang
+      # try the parent parent folder name
+      lang = identify_language_string(bits[-3])
+    end
+
+    if !lang
       puts "Could not identify language #{filename}"
     end
 
