@@ -25,14 +25,27 @@ end.each do |lang|
   # Collate all JSON files
   # TODO priorities, rankings etc
   collated = {}
+  count = {}
 
   # also load for zh = zh_TW
   Dir[File.dirname(__FILE__) + "/sources/*/output/#{lang}{,_*}.json"].each do |f|
     json = JSON.parse(File.read(f))
     collated.merge! json
+
+    # update counts
+    json.each do |k, v|
+      count[k] = (count[k] || 0) + 1
+    end
   end
 
   puts "Language #{lang}: #{collated.keys.length} keys"
+
+  # only select keys that have more than two instances
+  collated = collated.select do |k, v|
+    count[k] >= 2
+  end
+
+  puts " --> #{collated.keys.length} keys used more than once"
 
   output_lang = "#{output}/#{lang}"
   Dir.mkdir(output_lang) unless Dir.exists?(output_lang)
