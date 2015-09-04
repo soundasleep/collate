@@ -50,6 +50,12 @@ class BaseLoader
     end
 
     if !lang
+      # try splitting up the first .
+      more_bits = bits.last.split(".", 2)
+      lang = identify_language_string(more_bits.last)
+    end
+
+    if !lang
       # try the parent folder name
       lang = identify_language_string(bits[-2])
     end

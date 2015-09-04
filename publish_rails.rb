@@ -22,6 +22,9 @@ languages.select do |lang|
   # Rails only supports two-character languages?
   lang.length == 2
 end.each do |lang|
+  # no point in loading our lingua franca
+  next if lang == "en"
+
   # Collate all JSON files
   # TODO priorities, rankings etc
   collated = {}
@@ -46,6 +49,29 @@ end.each do |lang|
   end
 
   puts " --> #{collated.keys.length} keys used more than once"
+
+  # ignore keys that start with '&' or '_' (accelerator keys)
+  collated = collated.reject do |k, v|
+    k[0] == "&" || k[0] == "_"
+  end
+
+  puts " --> #{collated.keys.length} keys without obvious accelerator keys"
+
+  # drop words that have : at the end
+  collated = collated.reject do |k, v|
+    k[-1] == ":"
+  end
+
+  puts " --> #{collated.keys.length} keys without :s"
+
+  # try generate single words from capitalized single words
+  collated.select { |w, v| w.capitalize == w && w.split.size == 1 }.each do |word, value|
+    if !collated.has_key?(word.downcase)
+      collated[word.downcase] = value.downcase
+    end
+  end
+
+  puts " --> #{collated.keys.length} keys with guessed lowercase nouns"
 
   output_lang = "#{output}/#{lang}"
   Dir.mkdir(output_lang) unless Dir.exists?(output_lang)
